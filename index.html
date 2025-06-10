@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="index, follow" />
+
+    <!-- === Dynamisch befüllen ===
+         Ersetze {{KW}}, {{START_DATE}} (TT.MM.JJJJ) und {{END_DATE}} -->
+    <title>
+      Aktuelle Kalenderwoche heute: KW {{KW}} ({{START_DATE}} – {{END_DATE}})
+    </title>
+    <meta
+      name="description"
+      content="Heute ist KW {{KW}} ({{START_DATE}} – {{END_DATE}}). Feiertage DE/AT, Sternzeichen & Wochenmotto auf einen Blick."
+    />
+
+    <!-- Canonical + hreflang -->
+    <link rel="canonical" href="https://welche-kalenderwoche-ist-heute.at/" />
+    <link rel="alternate" hreflang="de"    href="https://welche-kalenderwoche-ist-heute.at/" />
+    <link rel="alternate" hreflang="de-AT" href="https://welche-kalenderwoche-ist-heute.at/?country=AT" />
+
+    <!-- Favicon -->
+    <link rel="icon" href="/favicon.svg" />
+
+    <!-- Open Graph -->
+    <meta property="og:locale"      content="de_DE" />
+    <meta property="og:type"        content="website" />
+    <meta
+      property="og:title"
+      content="Aktuelle Kalenderwoche heute: KW {{KW}} ({{START_DATE}} – {{END_DATE}})"
+    />
+    <meta
+      property="og:description"
+      content="Heute ist KW {{KW}} ({{START_DATE}} – {{END_DATE}}). Feiertage DE/AT, Sternzeichen & Wochenmotto."
+    />
+    <meta property="og:url"         content="https://welche-kalenderwoche-ist-heute.at/" />
+    <meta property="og:image"       content="https://welche-kalenderwoche-ist-heute.at/og-image.jpg" />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card"        content="summary_large_image" />
+    <meta name="twitter:title"       content="KW {{KW}} heute" />
+    <meta
+      name="twitter:description"
+      content="Heute ist KW {{KW}} ({{START_DATE}} – {{END_DATE}}). Feiertage, Sternzeichen & Wochenmotto."
+    />
+    <meta name="twitter:image"       content="https://welche-kalenderwoche-ist-heute.at/og-image.jpg" />
+
+    <!-- JSON-LD Structured Data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebPage",
+      "name": "Aktuelle Kalenderwoche heute: KW {{KW}}",
+      "url": "https://welche-kalenderwoche-ist-heute.at/",
+      "description": "Heute ist KW {{KW}} ({{START_DATE}} – {{END_DATE}}). Feiertage, Sternzeichen & Wochenmotto."
+    }
+    </script>
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "url": "https://welche-kalenderwoche-ist-heute.at/",
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https://welche-kalenderwoche-ist-heute.at/?q={query}",
+        "query-input": "required name=query"
+      }
+    }
+    </script>
+
+    <!-- Fonts / Styles -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
