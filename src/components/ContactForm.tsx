@@ -25,7 +25,7 @@ const ContactForm: React.FC = () => {
     setErrorMsg('');
     try {
       // Passe URL an dein Setup an, falls nötig
-      const response = await fetch('/api/contact', {
+      const response = await fetch('/.netlify/functions/contact', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
