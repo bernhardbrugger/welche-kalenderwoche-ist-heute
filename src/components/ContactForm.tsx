@@ -23,38 +23,56 @@ const ContactForm: React.FC = () => {
     if (status === 'loading') return;
     setStatus('loading');
     setErrorMsg('');
+  
+    // reCAPTCHA-Token holen …
+    let token: string;
     try {
-      // Passe URL an dein Setup an, falls nötig
+      token = await new Promise<string>((resolve, reject) => {
+        window.grecaptcha.ready(() => {
+          window.grecaptcha.execute(SITE_KEY, { action: 'contact' })
+            .then(resolve)
+            .catch(reject);
+        });
+      });
+    } catch (err) {
+      console.error('reCAPTCHA-Token Fehler:', err);
+      setErrorMsg('reCAPTCHA-Fehler.');
+      setStatus('error');
+      return;
+    }
+  
+    const payload = { ...formData, recaptchaToken: token, action: 'contact' };
+    try {
       const response = await fetch('/.netlify/functions/contact', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
       });
-
+      // Body nur einmal lesen:
+      const ct = response.headers.get('content-type') || '';
+      let bodyData: any;
+      if (ct.includes('application/json')) {
+        bodyData = await response.json();
+      } else {
+        bodyData = await response.text();
+      }
+  
       if (!response.ok) {
-        // Versuche JSON-Fehler auszulesen, ansonsten Text
-        let text: string;
-        try {
-          const data = await response.json();
-          text = data.error || JSON.stringify(data);
-        } catch {
-          text = await response.text();
-        }
-        console.error('Server-Antwort Fehler:', text);
-        setErrorMsg(text || 'Unbekannter Serverfehler');
+        const msg = typeof bodyData === 'string' ? bodyData : bodyData.error || JSON.stringify(bodyData);
+        console.error('Server-Antwort Fehler:', msg);
+        setErrorMsg(msg || 'Unbekannter Serverfehler');
         setStatus('error');
       } else {
         setStatus('success');
-        setFormData({ name: '', email: '', message: '' });
+        setFormData({ name: '', email: '', subject: '', message: '' });
       }
     } catch (err: any) {
-      console.error('Netzwerk- oder unerwarteter Fehler beim Senden:', err);
-      setErrorMsg('Netzwerk- oder Serverfehler ist aufgetreten.');
+      console.error('Fehler beim Senden:', err);
+      setErrorMsg('Netzwerk- oder Serverfehler.');
       setStatus('error');
     }
   };
+  
 
   const renderContent = () => {
     if (status === 'success') {
