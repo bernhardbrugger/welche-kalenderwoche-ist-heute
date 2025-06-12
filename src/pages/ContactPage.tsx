@@ -18,6 +18,7 @@ interface ContactFormData {
  * der in der Google-Konsole für deine Domain freigegeben ist.
  */
 const SITE_KEY = import.meta.env.VITE_RECAPTCHA_SITE_KEY as string | undefined;
+console.log('Loaded SITE_KEY:', SITE_KEY);
 
 const ContactPage: React.FC = () => {
   const [formData, setFormData] = useState<ContactFormData>({
