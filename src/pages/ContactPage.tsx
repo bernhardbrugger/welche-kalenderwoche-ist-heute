@@ -1,11 +1,9 @@
 // src/pages/ContactPage.tsx
-import React, { useState } from 'react';
+
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Send } from 'lucide-react';
 
-/**
- * Interface für die Formulardaten
- */
 interface ContactFormData {
   name: string;
   email: string;
@@ -13,22 +11,40 @@ interface ContactFormData {
   message: string;
 }
 
-/**
- * reCAPTCHA v3 Site Key: Ersetze den Platzhalter durch deinen Key,
- * der in der Google-Konsole für deine Domain freigegeben ist.
- */
-const SITE_KEY = "6LcXn1wrAAAAABky4KdsFc_I-c5cUaNIYweWwqsf";
-console.log("Loaded SITE_KEY:", SITE_KEY);
-
 const ContactPage: React.FC = () => {
+  // Formulardaten
   const [formData, setFormData] = useState<ContactFormData>({
     name: '',
     email: '',
     subject: '',
     message: ''
   });
-  const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+  // Status: idle, loading, success, error
+  const [status, setStatus] = useState<'idle'|'loading'|'success'|'error'>('idle');
   const [errorMsg, setErrorMsg] = useState<string>('');
+
+  // reCAPTCHA Site Key aus Env
+  const SITE_KEY = import.meta.env.VITE_RECAPTCHA_SITE_KEY as string | undefined;
+
+  // Dynamisch das reCAPTCHA-Skript einfügen, falls SITE_KEY vorhanden
+  useEffect(() => {
+    if (SITE_KEY && typeof window !== 'undefined') {
+      // Prüfen, ob Skript schon existiert
+      const existing = document.querySelector(`script[src*="recaptcha/api.js?render=${SITE_KEY}"]`);
+      if (!existing) {
+        const script = document.createElement('script');
+        script.src = `https://www.google.com/recaptcha/api.js?render=${SITE_KEY}`;
+        script.async = true;
+        script.defer = true;
+        document.head.appendChild(script);
+      }
+    }
+  }, [SITE_KEY]);
+
+  // Debug: Prüfe in Konsole, ob SITE_KEY geladen wird
+  useEffect(() => {
+    console.log('Loaded SITE_KEY:', SITE_KEY);
+  }, [SITE_KEY]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -36,62 +52,70 @@ const ContactPage: React.FC = () => {
     setStatus('loading');
     setErrorMsg('');
 
-    // Wenn reCAPTCHA v3 verwenden:
     if (!SITE_KEY) {
-      alert('reCAPTCHA-Site Key fehlt. Bitte SITE_KEY setzen.');
+      alert('reCAPTCHA Site Key fehlt. Bitte Environment-Variable setzen.');
       setStatus('idle');
       return;
     }
     if (!window.grecaptcha) {
-      alert('reCAPTCHA-Skript nicht geladen. Bitte index.html prüfen.');
+      alert('reCAPTCHA-Skript nicht geladen. Überprüfe index.html oder dynamische Einbindung.');
       setStatus('idle');
       return;
     }
 
     try {
-      // Hole reCAPTCHA v3 Token mit action "contact"
+      // reCAPTCHA v3 Token abrufen mit action "contact"
       const token: string = await new Promise((resolve, reject) => {
         window.grecaptcha.ready(() => {
-          window.grecaptcha
-            .execute(SITE_KEY, { action: 'contact' })
-            .then((tok) => resolve(tok))
-            .catch((err) => reject(err));
+          window.grecaptcha.execute(SITE_KEY, { action: 'contact' })
+            .then((tok: string) => {
+              resolve(tok);
+            })
+            .catch((err: any) => {
+              reject(err);
+            });
         });
       });
 
-      // Baue Payload für Backend
-      const payload: ContactFormData & { recaptchaToken: string; action: string } = {
+      console.log('reCAPTCHA-Token:', token);
+
+      // Payload zusammenstellen
+      const payload = {
         ...formData,
         recaptchaToken: token,
         action: 'contact',
       };
 
-      // Sende an dein Backend
-      const response = await fetch('/api/contact', {
+      // Endpoint anpassen: z.B. Netlify Function:
+      const response = await fetch('/.netlify/functions/contact', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify(payload),
       });
 
+      // Response auswerten
       if (!response.ok) {
+        // Lies Body je nach Content-Type nur einmal
         let text: string;
-        try {
+        const contentType = response.headers.get('content-type') || '';
+        if (contentType.includes('application/json')) {
           const data = await response.json();
           text = data.error || JSON.stringify(data);
-        } catch {
+        } else {
           text = await response.text();
         }
         console.error('Server-Antwort Fehler:', text);
-        setErrorMsg(text || 'Unbekannter Serverfehler');
+        setErrorMsg(text || 'Unbekannter Fehler vom Server');
         setStatus('error');
       } else {
+        // Erfolg
         setStatus('success');
         setFormData({ name: '', email: '', subject: '', message: '' });
       }
     } catch (err: any) {
-      console.error('Fehler beim Holen des reCAPTCHA-Token oder Senden:', err);
+      console.error('Fehler beim Abrufen des reCAPTCHA-Tokens oder beim Senden:', err);
       setErrorMsg('Fehler beim Senden. Bitte später erneut versuchen.');
       setStatus('error');
     }
@@ -119,7 +143,6 @@ const ContactPage: React.FC = () => {
 
     return (
       <form onSubmit={handleSubmit} className="space-y-4">
-        {/* Fehlermeldung anzeigen */}
         {status === 'error' && errorMsg && (
           <div className="bg-red-50 text-red-800 p-3 rounded-lg">
             <p className="font-medium">Fehler beim Senden:</p>
@@ -129,9 +152,7 @@ const ContactPage: React.FC = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
-              Name
-            </label>
+            <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">Name</label>
             <input
               type="text"
               id="name"
@@ -143,9 +164,7 @@ const ContactPage: React.FC = () => {
             />
           </div>
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-              E-Mail
-            </label>
+            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">E-Mail</label>
             <input
               type="email"
               id="email"
@@ -159,9 +178,7 @@ const ContactPage: React.FC = () => {
         </div>
 
         <div>
-          <label htmlFor="subject" className="block text-sm font-medium text-gray-700 mb-1">
-            Betreff
-          </label>
+          <label htmlFor="subject" className="block text-sm font-medium text-gray-700 mb-1">Betreff</label>
           <input
             type="text"
             id="subject"
@@ -174,30 +191,23 @@ const ContactPage: React.FC = () => {
         </div>
 
         <div>
-          <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-1">
-            Ihre Nachricht
-          </label>
+          <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-1">Ihre Nachricht</label>
           <textarea
             id="message"
+            rows={6}
             value={formData.message}
             onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-            rows={6}
             className="w-full px-4 py-2 border border-gray-300 rounded-apple focus:ring-2 focus:ring-primary focus:border-primary"
             required
             disabled={status === 'loading'}
           />
         </div>
 
-        <div className="flex flex-col items-center gap-4">
-          {!SITE_KEY && (
-            <p className="text-red-600">
-              reCAPTCHA v3 Site Key fehlt. Bitte SITE_KEY setzen.
-            </p>
-          )}
+        <div className="flex justify-end">
           <button
             type="submit"
-            className="btn-primary w-full md:w-auto flex items-center justify-center"
-            disabled={status === 'loading' || !SITE_KEY}
+            className="btn-primary flex items-center"
+            disabled={status === 'loading'}
           >
             {status === 'loading' ? (
               <svg
@@ -238,7 +248,6 @@ const ContactPage: React.FC = () => {
         transition={{ duration: 0.5 }}
         className="space-y-8"
       >
-        {/* Kopfbereich */}
         <header className="text-center">
           <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
             Kontaktieren Sie uns
@@ -248,13 +257,11 @@ const ContactPage: React.FC = () => {
             und werden uns zeitnah bei Ihnen melden.
           </p>
         </header>
-
         <div className="card">
           <div className="flex items-center gap-3 mb-6">
             <Send className="w-6 h-6 text-primary" />
             <h2 className="text-xl font-semibold">Kontaktformular</h2>
           </div>
-
           {renderContent()}
         </div>
       </motion.div>
