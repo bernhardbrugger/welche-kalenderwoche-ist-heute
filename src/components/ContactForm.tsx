@@ -20,7 +20,7 @@ const ContactForm: React.FC = () => {
 
   const SITE_KEY = import.meta.env.VITE_RECAPTCHA_SITE_KEY as string | undefined;
 
-  // reCAPTCHA-Skript laden
+  // reCAPTCHA-Skript nur dynamisch laden, nicht fest im index.html
   useEffect(() => {
     if (SITE_KEY && typeof window !== 'undefined') {
       const src = `https://www.google.com/recaptcha/api.js?render=${SITE_KEY}`;
@@ -34,6 +34,7 @@ const ContactForm: React.FC = () => {
     }
   }, [SITE_KEY]);
 
+  // Debug: SITE_KEY in Konsole
   useEffect(() => {
     console.log('Loaded SITE_KEY:', SITE_KEY);
   }, [SITE_KEY]);
@@ -45,31 +46,26 @@ const ContactForm: React.FC = () => {
     setErrorMsg('');
 
     if (!SITE_KEY) {
-      setErrorMsg('reCAPTCHA Site Key fehlt. Bitte Env-Variable setzen.');
+      setErrorMsg('reCAPTCHA Site Key fehlt. Bitte Environment-Variable setzen.');
       setStatus('error');
       return;
     }
     if (!window.grecaptcha) {
-      setErrorMsg('reCAPTCHA-Skript nicht geladen.');
+      setErrorMsg('reCAPTCHA-Skript nicht geladen. Stelle sicher, dass das Script eingebunden bzw. dynamisch geladen wird.');
       setStatus('error');
       return;
     }
 
-    // Token holen: cleare Behandlung ohne reject(null)
+    // reCAPTCHA-Token holen
     let token: string;
     try {
-      // Warte bis grecaptcha bereit ist
-      await new Promise<void>((resolve) => {
-        window.grecaptcha.ready(resolve);
-      });
-      // Frage Token an
+      // Warte bis grecaptcha bereit
+      await new Promise<void>(res => window.grecaptcha.ready(res));
       const tok = await window.grecaptcha.execute(SITE_KEY, { action: 'contact' });
-      if (!tok) {
-        throw new Error('Leeres reCAPTCHA-Token erhalten');
-      }
+      if (!tok) throw new Error('Leeres reCAPTCHA-Token erhalten');
       token = tok;
       console.log('reCAPTCHA-Token erhalten:', token);
-    } catch (err: any) {
+    } catch (err) {
       console.error('Fehler beim Abrufen des reCAPTCHA-Tokens:', err);
       setErrorMsg('Fehler beim Abrufen des reCAPTCHA-Tokens.');
       setStatus('error');
@@ -77,7 +73,6 @@ const ContactForm: React.FC = () => {
     }
 
     const payload = { ...formData, recaptchaToken: token, action: 'contact' };
-    // Absoluter Pfad
     const endpoint = `${window.location.origin}/.netlify/functions/contact`;
 
     try {
@@ -90,14 +85,13 @@ const ContactForm: React.FC = () => {
       if (response.status === 404) {
         console.error('Endpoint nicht gefunden (404):', endpoint);
         setErrorMsg(
-          'Endpoint nicht gefunden (404). Lokal ohne "netlify dev" ist das normal; ' +
-          'im Live-Deploy stelle sicher, dass die Function korrekt liegt.'
+          'Kontakt-Endpoint nicht gefunden (404). Lokal ohne "netlify dev" ist das normal; im Live-Deploy stelle sicher, dass die Function deployed ist.'
         );
         setStatus('error');
         return;
       }
 
-      // Body nur einmal auslesen
+      // Body nur einmal lesen
       const ct = response.headers.get('content-type') || '';
       let bodyData: any;
       if (ct.includes('application/json')) {

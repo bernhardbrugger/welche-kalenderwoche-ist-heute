@@ -1,4 +1,6 @@
 [build]
-  command = "npm run build"       # oder dein Build-Befehl
-  publish = "dist"                # Ordner, den Vite baut, z.B. "dist" oder "build"
-  functions = "netlify/functions" # sagt Netlify, wo die Functions liegen
+  command = "npm run build"
+  publish = "dist"
+  functions = "netlify/functions"
+
+# Optional: redirects, headers etc.

@@ -1,21 +1,15 @@
 // netlify/functions/contact.js
 
-// Wenn du node-fetch brauchst, ab Node 18 global.fetch verfügbar. Bei älteren Node-Versionen könnte node-fetch nötig sein:
-// const fetch = global.fetch || require('node-fetch');
-
-// Beispiel mit SendGrid: installiere zuerst in deinem Projekt:
-// npm install @sendgrid/mail
 const sgMail = require('@sendgrid/mail');
 
-// Setze SendGrid API Key aus Umgebungsvariablen (in Netlify-Dashboard konfigurieren)
 if (process.env.SENDGRID_API_KEY) {
   sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 } else {
   console.error('WARNUNG: SENDGRID_API_KEY nicht gesetzt.');
 }
 
-// Handler-Funktion
 exports.handler = async function(event, context) {
+  console.log('DEBUG: contact Function aufgerufen, HTTP-Method:', event.httpMethod);
   if (event.httpMethod !== 'POST') {
     return {
       statusCode: 405,
@@ -36,15 +30,12 @@ exports.handler = async function(event, context) {
 
   const { name, email, subject, message, recaptchaToken, action } = body;
 
-  // Pflichtfelder prüfen
   if (!name || !email || !message) {
     return {
       statusCode: 400,
       body: JSON.stringify({ error: 'Fehlende Pflichtfelder' }),
     };
   }
-
-  // reCAPTCHA-Token prüfen
   if (!recaptchaToken) {
     return {
       statusCode: 400,
@@ -58,8 +49,9 @@ exports.handler = async function(event, context) {
       body: JSON.stringify({ error: 'Serverkonfiguration fehlerhaft.' }),
     };
   }
+  console.log('DEBUG: RECAPTCHA_SECRET_KEY vorhanden? ', Boolean(process.env.RECAPTCHA_SECRET_KEY));
 
-  // 1. reCAPTCHA validieren
+  // reCAPTCHA validieren
   try {
     const params = new URLSearchParams();
     params.append('secret', process.env.RECAPTCHA_SECRET_KEY);
@@ -71,6 +63,7 @@ exports.handler = async function(event, context) {
       body: params.toString(),
     });
     const data = await verifyRes.json();
+    console.log('DEBUG: reCAPTCHA-Antwort:', data);
 
     if (!data.success) {
       console.error('reCAPTCHA Validierung fehlgeschlagen:', data);
@@ -79,7 +72,6 @@ exports.handler = async function(event, context) {
         body: JSON.stringify({ error: 'reCAPTCHA Validierung fehlgeschlagen.' }),
       };
     }
-    // Optional: action prüfen, falls du action übermittelst
     if (data.action && action && data.action !== action) {
       console.error('Ungültige reCAPTCHA-Aktion:', data.action, 'erwartet:', action);
       return {
@@ -87,7 +79,6 @@ exports.handler = async function(event, context) {
         body: JSON.stringify({ error: 'Ungültige reCAPTCHA-Aktion.' }),
       };
     }
-    // Score-Schwelle prüfen
     const scoreThreshold = 0.5;
     if (typeof data.score === 'number' && data.score < scoreThreshold) {
       console.error('Zu geringes reCAPTCHA-Score:', data.score);
@@ -104,8 +95,8 @@ exports.handler = async function(event, context) {
     };
   }
 
-  // 2. E-Mail versenden via SendGrid
-  const toEmail = process.env.CONTACT_TO_EMAIL; // Empfänger
+  // E-Mail versenden via SendGrid
+  const toEmail = process.env.CONTACT_TO_EMAIL;
   if (!toEmail) {
     console.error('CONTACT_TO_EMAIL nicht gesetzt.');
     return {
@@ -114,7 +105,6 @@ exports.handler = async function(event, context) {
     };
   }
   const fromEmail = process.env.SENDGRID_FROM_EMAIL || toEmail;
-  // In SendGrid muss fromEmail verifiziert sein
 
   const msg = {
     to: toEmail,
@@ -143,7 +133,6 @@ ${message}
     };
   }
 
-  // Erfolgreich
   return {
     statusCode: 200,
     body: JSON.stringify({ success: true }),
