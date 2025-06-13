@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+// src/components/ContactForm.tsx
+import React, { useState, useEffect } from 'react';
 import { Send } from 'lucide-react';
 import { motion } from 'framer-motion';
 
@@ -14,41 +15,89 @@ const ContactForm: React.FC = () => {
     email: '',
     message: ''
   });
-  // Status: 'idle' | 'loading' | 'success' | 'error'
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [errorMsg, setErrorMsg] = useState<string>('');
+
+  const SITE_KEY = import.meta.env.VITE_RECAPTCHA_SITE_KEY as string | undefined;
+
+  // reCAPTCHA-Skript laden
+  useEffect(() => {
+    if (SITE_KEY && typeof window !== 'undefined') {
+      const src = `https://www.google.com/recaptcha/api.js?render=${SITE_KEY}`;
+      if (!document.querySelector(`script[src="${src}"]`)) {
+        const script = document.createElement('script');
+        script.src = src;
+        script.async = true;
+        script.defer = true;
+        document.head.appendChild(script);
+      }
+    }
+  }, [SITE_KEY]);
+
+  useEffect(() => {
+    console.log('Loaded SITE_KEY:', SITE_KEY);
+  }, [SITE_KEY]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (status === 'loading') return;
     setStatus('loading');
     setErrorMsg('');
-  
-    // reCAPTCHA-Token holen …
-    let token: string;
-    try {
-      token = await new Promise<string>((resolve, reject) => {
-        window.grecaptcha.ready(() => {
-          window.grecaptcha.execute(SITE_KEY, { action: 'contact' })
-            .then(resolve)
-            .catch(reject);
-        });
-      });
-    } catch (err) {
-      console.error('reCAPTCHA-Token Fehler:', err);
-      setErrorMsg('reCAPTCHA-Fehler.');
+
+    if (!SITE_KEY) {
+      setErrorMsg('reCAPTCHA Site Key fehlt. Bitte Env-Variable setzen.');
       setStatus('error');
       return;
     }
-  
-    const payload = { ...formData, recaptchaToken: token, action: 'contact' };
+    if (!window.grecaptcha) {
+      setErrorMsg('reCAPTCHA-Skript nicht geladen.');
+      setStatus('error');
+      return;
+    }
+
+    // Token holen: cleare Behandlung ohne reject(null)
+    let token: string;
     try {
-      const response = await fetch('/.netlify/functions/contact', {
+      // Warte bis grecaptcha bereit ist
+      await new Promise<void>((resolve) => {
+        window.grecaptcha.ready(resolve);
+      });
+      // Frage Token an
+      const tok = await window.grecaptcha.execute(SITE_KEY, { action: 'contact' });
+      if (!tok) {
+        throw new Error('Leeres reCAPTCHA-Token erhalten');
+      }
+      token = tok;
+      console.log('reCAPTCHA-Token erhalten:', token);
+    } catch (err: any) {
+      console.error('Fehler beim Abrufen des reCAPTCHA-Tokens:', err);
+      setErrorMsg('Fehler beim Abrufen des reCAPTCHA-Tokens.');
+      setStatus('error');
+      return;
+    }
+
+    const payload = { ...formData, recaptchaToken: token, action: 'contact' };
+    // Absoluter Pfad
+    const endpoint = `${window.location.origin}/.netlify/functions/contact`;
+
+    try {
+      const response = await fetch(endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
       });
-      // Body nur einmal lesen:
+
+      if (response.status === 404) {
+        console.error('Endpoint nicht gefunden (404):', endpoint);
+        setErrorMsg(
+          'Endpoint nicht gefunden (404). Lokal ohne "netlify dev" ist das normal; ' +
+          'im Live-Deploy stelle sicher, dass die Function korrekt liegt.'
+        );
+        setStatus('error');
+        return;
+      }
+
+      // Body nur einmal auslesen
       const ct = response.headers.get('content-type') || '';
       let bodyData: any;
       if (ct.includes('application/json')) {
@@ -56,15 +105,17 @@ const ContactForm: React.FC = () => {
       } else {
         bodyData = await response.text();
       }
-  
+
       if (!response.ok) {
-        const msg = typeof bodyData === 'string' ? bodyData : bodyData.error || JSON.stringify(bodyData);
+        const msg = typeof bodyData === 'string'
+          ? bodyData
+          : bodyData.error || JSON.stringify(bodyData);
         console.error('Server-Antwort Fehler:', msg);
         setErrorMsg(msg || 'Unbekannter Serverfehler');
         setStatus('error');
       } else {
         setStatus('success');
-        setFormData({ name: '', email: '', subject: '', message: '' });
+        setFormData({ name: '', email: '', message: '' });
       }
     } catch (err: any) {
       console.error('Fehler beim Senden:', err);
@@ -72,7 +123,6 @@ const ContactForm: React.FC = () => {
       setStatus('error');
     }
   };
-  
 
   const renderContent = () => {
     if (status === 'success') {
@@ -196,7 +246,6 @@ const ContactForm: React.FC = () => {
         <Send className="w-6 h-6 text-primary" />
         <h2 className="text-xl font-semibold">Kontaktieren Sie uns</h2>
       </div>
-
       {renderContent()}
     </motion.div>
   );
