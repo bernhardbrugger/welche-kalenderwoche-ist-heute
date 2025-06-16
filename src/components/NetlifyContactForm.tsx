@@ -26,7 +26,7 @@ const NetlifyContactForm: React.FC = () => {
 
     const form = e.currentTarget;
     const data = new FormData(form);
-    // data enthält bereits name, email, subject, message, bot-field
+    // data enthält name, email, subject, message, bot-field
 
     try {
       const response = await fetch('/', {
@@ -57,11 +57,13 @@ const NetlifyContactForm: React.FC = () => {
       onSubmit={handleSubmit}
       className="space-y-4"
     >
-      {/* Pflicht für Netlify Forms */}
+      {/* Pflichtfeld für Netlify Forms */}
       <input type="hidden" name="form-name" value="contact" />
-      {/* Honeypot */}
+      {/* Honeypot zum Schutz gegen Spam */}
       <p className="hidden">
-        <label>Don’t fill this out if you're human: <input name="bot-field" /></label>
+        <label>
+          Don’t fill this out if you’re human: <input name="bot-field" />
+        </label>
       </p>
 
       {status === 'error' && errorMsg && (
