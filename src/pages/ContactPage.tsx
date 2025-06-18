@@ -1,8 +1,6 @@
-// src/pages/ContactPage.tsx
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Send } from 'lucide-react';
-import NetlifyContactForm from '../components/NetlifyContactForm';
 
 const ContactPage: React.FC = () => {
   return (
@@ -25,9 +23,14 @@ const ContactPage: React.FC = () => {
         <div className="card">
           <div className="flex items-center gap-3 mb-6">
             <Send className="w-6 h-6 text-primary" />
-            <h2 className="text-xl font-semibold">Kontaktformular</h2>
+            <h2 className="text-xl font-semibold">Jetzt per E-Mail kontaktieren</h2>
           </div>
-          <NetlifyContactForm />
+          <a
+            href="mailto:bernhard.brugger@outlook.com?subject=Kontaktanfrage über Website"
+            className="inline-block bg-primary text-white font-semibold py-3 px-6 rounded-lg shadow hover:bg-primary/90 transition"
+          >
+            E-Mail schreiben
+          </a>
         </div>
       </motion.div>
     </div>
