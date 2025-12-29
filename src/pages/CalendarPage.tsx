@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import CalendarWeekDisplay from '../components/CalendarWeekDisplay';
 import DateInfoCard from '../components/DateInfoCard';
 import WorkingTimeCalculator from '../components/WorkingTimeCalculator';
@@ -6,8 +6,28 @@ import YearProgressCard from '../components/YearProgressCard';
 import HistoricalFactCard from '../components/HistoricalFactCard';
 import Footer from '../components/Footer';
 import Header from '../components/Header';
+import { useWeekData } from '../context/WeekDataContext';
+import { formatDateShort } from '../utils/dateUtils';
 
 const CalendarPage: React.FC = () => {
+  const { weekNumber, weekStart, weekEnd } = useWeekData();
+
+  useEffect(() => {
+    const startDate = formatDateShort(weekStart);
+    const endDate = formatDateShort(weekEnd);
+
+    document.title = `Aktuelle Kalenderwoche heute: KW ${weekNumber} (${startDate} – ${endDate})`;
+
+    const description = `Heute ist KW ${weekNumber} (${startDate} – ${endDate}). Feiertage DE/AT, Sternzeichen & Wochenmotto auf einen Blick.`;
+    document.querySelector('meta[name="description"]')?.setAttribute('content', description);
+
+    // Update Open Graph and Twitter card meta tags
+    document.querySelector('meta[property="og:title"]')?.setAttribute('content', document.title);
+    document.querySelector('meta[property="og:description"]')?.setAttribute('content', description);
+    document.querySelector('meta[name="twitter:title"]')?.setAttribute('content', `KW ${weekNumber} heute`);
+    document.querySelector('meta[name="twitter:description"]')?.setAttribute('content', description);
+  }, [weekNumber, weekStart, weekEnd]);
+
   return (
     <div className="max-w-5xl mx-auto px-4 py-6 sm:py-8 md:py-12">
       <Header />
