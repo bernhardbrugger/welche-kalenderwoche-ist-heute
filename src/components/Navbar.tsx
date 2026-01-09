@@ -18,8 +18,7 @@ const Navbar: React.FC = () => {
       <div className="max-w-5xl mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           <NavLink to="/" className="flex items-center">
-            <Calendar className="h-8 w-8 text-primary" />
-            <span className="ml-2 text-xl font-semibold text-gray-900">KW App</span>
+            <img src="/favicon.svg" alt="KW App Logo" className="h-10 w-auto" />
           </NavLink>
           
           <div className="hidden md:flex space-x-4">
