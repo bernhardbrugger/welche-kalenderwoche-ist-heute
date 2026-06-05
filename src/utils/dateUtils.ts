@@ -1,4 +1,4 @@
-import { getISOWeek, getISOWeekYear, startOfISOWeek, endOfISOWeek, format, differenceInWeeks } from 'date-fns';
+import { getISOWeek, getISOWeekYear, startOfISOWeek, endOfISOWeek, format, differenceInCalendarWeeks } from 'date-fns';
 import { de } from 'date-fns/locale';
 
 /**
@@ -56,7 +56,7 @@ export const formatWeekRange = (start: Date, end: Date): string => {
  * Get a description of the relative week position
  */
 export const getWeekDescription = (selectedDate: Date, currentDate: Date): string => {
-  const weeksDiff = differenceInWeeks(selectedDate, currentDate);
+  const weeksDiff = differenceInCalendarWeeks(selectedDate, currentDate, { weekStartsOn: 1 });
   
   if (weeksDiff === 0) {
     return 'Aktuelle Kalenderwoche';

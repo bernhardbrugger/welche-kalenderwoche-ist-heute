@@ -366,8 +366,7 @@ export const dailyFactsJanuary: Record<string, string> = {
   "12-31": "31.12.1999: Übergabe des Panamakanals von den USA an Panama – ein symbolischer Akt der Souveränität."
 };
 
-export const getHistoricalFact = (weekNumber: number): string => {
-  const today = new Date();
-  const key = today.toISOString().slice(5, 10); // "MM-DD"
+export const getHistoricalFact = (date: Date): string => {
+  const key = date.toISOString().slice(5, 10); // "MM-DD"
   return dailyFactsJanuary[key] || "Für dieses Datum liegt derzeit kein Fakt vor.";
 };

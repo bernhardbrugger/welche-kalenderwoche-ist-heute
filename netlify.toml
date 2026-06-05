@@ -3,4 +3,6 @@
   publish = "dist"
   functions = "netlify/functions"
 
-# Optional: redirects, headers etc.
+[[edge_functions]]
+  path = "/*"
+  function = "transform-meta"

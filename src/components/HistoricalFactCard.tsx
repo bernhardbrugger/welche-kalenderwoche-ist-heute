@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { useWeekData } from '../context/WeekDataContext';
 
 const HistoricalFactCard: React.FC = () => {
-  const { historicalFact, weekNumber } = useWeekData();
+  const { historicalFact } = useWeekData();
 
   return (
     <motion.section 
