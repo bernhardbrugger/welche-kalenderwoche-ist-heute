@@ -32,7 +32,7 @@ const NetlifyContactForm: React.FC = () => {
       const response = await fetch('/', {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: new URLSearchParams(data as any).toString(),
+        body: new URLSearchParams(data as unknown as Record<string, string>).toString(),
       });
       if (response.ok) {
         setStatus('success');

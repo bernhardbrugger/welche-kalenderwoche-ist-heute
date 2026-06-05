@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { Calendar, Timer } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Timer } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useWeekData } from '../context/WeekDataContext';
 import { getWeekNumber } from '../utils/dateUtils';
@@ -37,8 +37,6 @@ const YearProgressCard: React.FC = () => {
     minutes: 0,
     seconds: 0
   });
-
-  const hasAnimated = useRef(false);
 
   useEffect(() => {
     const calculateTimeLeft = () => {
@@ -191,7 +189,6 @@ const YearProgressCard: React.FC = () => {
   );
 
   // Prüfe ob Zeiträume bereits vergangen sind
-  const now = selectedDate;
   const isMonthPast = monthTimeLeft.days === 0 && monthTimeLeft.hours === 0 && monthTimeLeft.minutes === 0 && monthTimeLeft.seconds === 0;
   const isQuarterPast = quarterTimeLeft.days === 0 && quarterTimeLeft.hours === 0 && quarterTimeLeft.minutes === 0 && quarterTimeLeft.seconds === 0;
   const isHalfYearPast = halfYearTimeLeft.days === 0 && halfYearTimeLeft.hours === 0 && halfYearTimeLeft.minutes === 0 && halfYearTimeLeft.seconds === 0;
