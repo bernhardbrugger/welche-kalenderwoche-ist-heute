@@ -53,13 +53,13 @@ export const getHolidays = (weekStart: Date, weekEnd: Date, country: 'DE' | 'AT'
   });
 };
 
-export const hasBridgeDay = (weekStart: Date, weekEnd: Date, country: 'DE' | 'AT'): boolean => {
+export const hasBridgeDay = (): boolean => {
   // This is a simplified implementation that would need more logic in a real app
   // to properly identify bridge days based on holidays and weekend patterns
   return false;
 };
 
-export const hasLongWeekend = (weekStart: Date, weekEnd: Date, country: 'DE' | 'AT'): boolean => {
+export const hasLongWeekend = (): boolean => {
   // This would check if there are holidays adjacent to weekends
   return false;
 };

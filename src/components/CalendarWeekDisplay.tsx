@@ -40,9 +40,13 @@ const CalendarWeekDisplay: React.FC = () => {
           </button>
 
           <div className="flex items-center gap-1 sm:gap-4 md:gap-8 min-w-0 flex-1">
-            <span className="hidden lg:block text-lg xl:text-2xl text-gray-300 opacity-50 flex-shrink-0">
+            <button
+              onClick={() => navigateWeek(-1)}
+              className="hidden lg:block text-lg xl:text-2xl text-gray-300 hover:text-primary opacity-50 hover:opacity-100 transition-all flex-shrink-0"
+              aria-label={`Zu KW ${prevWeek} springen`}
+            >
               KW {prevWeek}
-            </span>
+            </button>
             
             <motion.div 
               className="text-center min-w-0 flex-1"
@@ -56,9 +60,13 @@ const CalendarWeekDisplay: React.FC = () => {
               </div>
             </motion.div>
             
-            <span className="hidden lg:block text-lg xl:text-2xl text-gray-300 opacity-50 flex-shrink-0">
+            <button
+              onClick={() => navigateWeek(1)}
+              className="hidden lg:block text-lg xl:text-2xl text-gray-300 hover:text-primary opacity-50 hover:opacity-100 transition-all flex-shrink-0"
+              aria-label={`Zu KW ${nextWeek} springen`}
+            >
               KW {nextWeek}
-            </span>
+            </button>
           </div>
 
           <button

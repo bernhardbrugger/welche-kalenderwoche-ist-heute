@@ -1,9 +1,8 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import React, { createContext, useContext, useState, ReactNode } from 'react';
 import { getWeekNumber, getWeekRange, formatDate, getDayName } from '../utils/dateUtils';
 import { Holiday, getHolidays } from '../utils/holidayUtils';
 import { getHistoricalFact } from '../utils/factsUtils';
 import { getWeeklyMotto } from '../utils/mottoUtils';
-import { getZodiacSign } from '../utils/zodiacUtils';
 
 interface WeekData {
   currentDate: Date;
@@ -57,7 +56,7 @@ export const WeekDataProvider: React.FC<WeekDataProviderProps> = ({ children }) 
     AT: getHolidays(weekStart, weekEnd, 'AT'),
   };
 
-  const historicalFact = getHistoricalFact(weekNumber);
+  const historicalFact = getHistoricalFact(selectedDate);
   const weeklyMotto = getWeeklyMotto(weekNumber);
 
   const toggleCountry = () => {

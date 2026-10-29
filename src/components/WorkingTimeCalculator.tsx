@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Calculator, Clock, Calendar } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useWeekData } from '../context/WeekDataContext';
@@ -30,11 +30,7 @@ const WorkingTimeCalculator: React.FC = () => {
   // hoursPerDay jetzt als String
   const [hoursPerDay, setHoursPerDay] = useState<string>('8');
 
-  useEffect(() => {
-    calculateWorkingTime();
-  }, [weekStart, weekEnd, holidays, selectedCountry, hoursPerDay, selectedDate]);
-
-  const isWorkingDay = (date: Date, year: number): boolean => {
+  const isWorkingDay = useCallback((date: Date, year: number): boolean => {
     const dayOfWeek = date.getDay();
     if (dayOfWeek === 0 || dayOfWeek === 6) return false;
 
@@ -43,9 +39,9 @@ const WorkingTimeCalculator: React.FC = () => {
       const holidayInYear = new Date(year, holiday.date.getMonth(), holiday.date.getDate());
       return holidayInYear.toDateString() === date.toDateString();
     });
-  };
+  }, [holidays, selectedCountry]);
 
-  const calculateWorkingTime = () => {
+  const calculateWorkingTime = useCallback(() => {
     const referenceYear = selectedDate.getFullYear();
 
     // parse hoursPerDay nur hier
@@ -85,7 +81,11 @@ const WorkingTimeCalculator: React.FC = () => {
       workedDays,
       workedHours: workedDays * numericHours
     });
-  };
+  }, [hoursPerDay, selectedDate, weekStart, weekEnd, isWorkingDay]);
+
+  useEffect(() => {
+    calculateWorkingTime();
+  }, [calculateWorkingTime]);
 
   const workingDaysProgress = workingTimeData.totalWorkingDays > 0
     ? Math.round((workingTimeData.workedDays / workingTimeData.totalWorkingDays) * 100)
