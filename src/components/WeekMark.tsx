@@ -1,0 +1,20 @@
+import type { FC } from 'react';
+
+const WeekMark: FC<{ className?: string }> = ({ className = 'h-9 w-9' }) => (
+  <svg className={className} viewBox="0 0 32 32" aria-hidden>
+    <rect width="32" height="32" rx="5" fill="#101820" />
+    <g fill="none" stroke="#d5deea" strokeWidth="1.7" strokeLinecap="round">
+      <path d="M16 5.2v3.2" />
+      <path d="M23.6 7.6l-1.9 2.6" />
+      <path d="M26.6 15.2h-3.3" />
+      <path d="M23.2 22.6l-2.4-1.8" />
+      <path d="M16 26.8v-3.2" />
+      <path d="M8.8 22.4l1.8-2.4" />
+      <path d="M5.4 15.2h3.3" />
+    </g>
+    <path d="M16 16 L16 6.2 A9.8 9.8 0 0 1 24.2 11.2 Z" fill="#ffd15c" />
+    <circle cx="16" cy="16" r="2.1" fill="#ffd15c" />
+  </svg>
+);
+
+export default WeekMark;

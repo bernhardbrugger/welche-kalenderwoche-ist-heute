@@ -52,8 +52,8 @@ export default {
         }
       },
       fontFamily: {
-        sans: ['Outfit', 'system-ui', 'sans-serif'],
-        display: ['Fraunces', 'Georgia', 'serif'],
+        sans: ['"Atkinson Hyperlegible"', 'system-ui', 'sans-serif'],
+        display: ['"Darker Grotesque"', '"Arial Narrow"', 'sans-serif'],
       },
       fontSize: {
         huge: '64px',
