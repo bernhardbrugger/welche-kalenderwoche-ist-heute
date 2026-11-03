@@ -2,105 +2,190 @@
 @tailwind components;
 @tailwind utilities;
 
-@layer base {
-  html {
-    @apply antialiased;
-  }
-  
-  body {
-    @apply font-sans bg-background-light text-text-light;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-  }
+:root {
+  color-scheme: light;
+  --paper: #f3ecdf;
+  --paper-2: rgba(255, 250, 242, 0.78);
+  --ink: #1c1712;
+  --muted: #6f675c;
+  --line: rgba(28, 23, 18, 0.12);
+  --accent: #e23b24;
+  --accent-ink: #fff7f3;
+  --spruce: #1d6b52;
+  --spruce-soft: rgba(29, 107, 82, 0.12);
+  --shadow: 0 24px 60px rgba(72, 42, 18, 0.08);
+  --weekend: rgba(226, 59, 36, 0.07);
+  --glow: rgba(226, 59, 36, 0.22);
+  --glow-2: rgba(29, 107, 82, 0.16);
 }
 
-@layer components {
-  .card {
-    @apply bg-white rounded-apple shadow-apple p-4 sm:p-6 md:p-8 transition-all duration-200;
-  }
-  
-  .btn {
-    @apply inline-flex items-center justify-center rounded-apple px-3 sm:px-4 py-2 font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary-300 text-sm sm:text-base;
-  }
-  
-  .btn-primary {
-    @apply btn bg-primary text-white hover:bg-primary-600;
-  }
-  
-  .btn-secondary {
-    @apply btn bg-gray-100 text-text-light hover:bg-gray-200;
-  }
-
-  .appear-animate {
-    @apply opacity-0 animate-fade-in;
-    animation-fill-mode: forwards;
-  }
-  
-  .appear-animate-delay-1 {
-    animation-delay: 0.1s;
-  }
-  
-  .appear-animate-delay-2 {
-    animation-delay: 0.2s;
-  }
-  
-  .appear-animate-delay-3 {
-    animation-delay: 0.3s;
-  }
-
-  .slide-up {
-    @apply opacity-0 animate-slide-up;
-    animation-fill-mode: forwards;
-  }
-
-  .slide-up-delay-1 {
-    animation-delay: 0.1s;
-  }
-
-  .slide-up-delay-2 {
-    animation-delay: 0.2s;
-  }
-
-  .slide-up-delay-3 {
-    animation-delay: 0.3s;
-  }
-
-  /* Mobile-specific improvements */
-  @media (max-width: 640px) {
-    .card {
-      @apply p-3;
-    }
-    
-    .btn {
-      @apply px-3 py-2 text-sm;
-    }
-  }
+html.dark {
+  color-scheme: dark;
+  --paper: #12100e;
+  --paper-2: rgba(30, 26, 22, 0.82);
+  --ink: #f6f1e8;
+  --muted: #b7aea2;
+  --line: rgba(246, 241, 232, 0.12);
+  --accent: #ff6a4d;
+  --accent-ink: #2a100c;
+  --spruce: #8ed9c4;
+  --spruce-soft: rgba(142, 217, 196, 0.14);
+  --shadow: 0 24px 60px rgba(0, 0, 0, 0.35);
+  --weekend: rgba(255, 106, 77, 0.1);
+  --glow: rgba(255, 106, 77, 0.18);
+  --glow-2: rgba(142, 217, 196, 0.12);
 }
 
-@keyframes shine {
-  from {
-    transform: translateX(-100%);
-  }
-  to {
-    transform: translateX(100%);
-  }
+html {
+  background: var(--paper);
 }
 
-/* Ensure text doesn't overflow on very small screens */
-@media (max-width: 320px) {
-  .card {
-    @apply p-2;
-  }
-  
-  h1 {
-    @apply text-xl;
-  }
-  
-  h2 {
-    @apply text-base;
-  }
-  
-  h3 {
-    @apply text-sm;
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: Outfit, system-ui, sans-serif;
+  font-weight: 460;
+  text-rendering: optimizeLegibility;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: -20%;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse at 12% -10%, var(--glow), transparent 46%),
+    radial-gradient(ellipse at 100% 0%, var(--glow-2), transparent 42%),
+    radial-gradient(ellipse at 70% 110%, var(--glow), transparent 40%);
+  animation: drift 22s ease-in-out infinite alternate;
+}
+
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.16;
+  mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/></filter><rect width='160' height='160' filter='url(%23n)' opacity='0.55'/></svg>");
+}
+
+html.dark body::after {
+  opacity: 0.22;
+  mix-blend-mode: overlay;
+}
+
+#root {
+  position: relative;
+  z-index: 1;
+}
+
+::selection {
+  background: var(--accent);
+  color: var(--accent-ink);
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+.font-display {
+  font-family: Fraunces, Georgia, serif;
+  font-optical-sizing: auto;
+}
+
+.panel {
+  background: var(--paper-2);
+  border: 1px solid var(--line);
+  border-radius: 1.6rem;
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(16px);
+}
+
+.kicker {
+  font-size: 0.72rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--muted);
+  font-weight: 560;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  border-radius: 999px;
+  padding: 0.7rem 1rem;
+  border: 1px solid var(--line);
+  background: var(--paper-2);
+  color: var(--ink);
+  font-weight: 560;
+  transition: transform 0.18s ease, background 0.18s ease;
+}
+
+.btn:hover {
+  transform: translateY(-1px);
+}
+
+.btn-accent {
+  background: var(--accent);
+  color: var(--accent-ink);
+  border-color: transparent;
+}
+
+.btn-ghost {
+  background: transparent;
+}
+
+.field {
+  width: 100%;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--ink);
+  padding: 0.8rem 1rem;
+  font: inherit;
+}
+
+.field:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+select.field {
+  border-radius: 0.9rem;
+}
+
+@keyframes drift {
+  from { transform: translate3d(-2%, -1%, 0) scale(1); }
+  to { transform: translate3d(2%, 2%, 0) scale(1.06); }
+}
+
+@keyframes pulse-ring {
+  0%, 100% { transform: scale(1); opacity: 0.7; }
+  50% { transform: scale(1.08); opacity: 0; }
+}
+
+.today-pulse::after {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  border-radius: 999px;
+  border: 1px solid var(--accent);
+  animation: pulse-ring 2.4s ease-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }

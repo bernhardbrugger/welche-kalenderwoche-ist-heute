@@ -1,13 +1,8 @@
 /**
- * Berechnung von Sonnenaufgang und Sonnenuntergang
- * Basiert auf astronomischen Formeln für Mitteleuropa
- * 
- * WICHTIG: Dies ist eine vereinfachte Berechnung!
- * - Genauigkeit: ±10-15 Minuten
- * - Optimiert für Mitteleuropa (48°N, 16°E - Wien/München)
- * - Berücksichtigt NICHT: Zeitzone-Verschiebungen, Sommerzeit, lokale Topographie
- * 
- * Für höchste Genauigkeit würde eine externe API benötigt werden.
+ * Sonnenauf- und -untergang für Wien (48.21°N, 16.37°E).
+ * Almanach-Formel (US Naval Observatory), lokale Uhrzeit über Europe/Vienna,
+ * damit die Sommerzeitumstellung am richtigen Zeitpunkt greift.
+ * Abweichung typisch unter zwei Minuten, ohne Berge und Refraktionswetter.
  */
 
 export interface SunTimes {
@@ -17,93 +12,80 @@ export interface SunTimes {
   accuracy: string;
 }
 
+const LAT = 48.2082;
+const LNG = 16.3738;
+const ZENITH = 90.833;
+
+const normDegrees = (value: number) => {
+  const wrapped = value % 360;
+  return wrapped < 0 ? wrapped + 360 : wrapped;
+};
+
+const normHours = (value: number) => {
+  const wrapped = value % 24;
+  return wrapped < 0 ? wrapped + 24 : wrapped;
+};
+
+/** UTC hours of sunrise (rising=true) or sunset. */
+function eventUtcHours(year: number, month: number, day: number, rising: boolean): number | null {
+  const n1 = Math.floor((275 * month) / 9);
+  const n2 = Math.floor((month + 9) / 12);
+  const n3 = 1 + Math.floor((year - 4 * Math.floor(year / 4) + 2) / 3);
+  const dayOfYear = n1 - n2 * n3 + day - 30;
+  const lngHour = LNG / 15;
+  const t = dayOfYear + ((rising ? 6 : 18) - lngHour) / 24;
+  const meanAnomaly = 0.9856 * t - 3.289;
+  const rad = Math.PI / 180;
+  let trueLong = meanAnomaly + 1.916 * Math.sin(meanAnomaly * rad) + 0.02 * Math.sin(2 * meanAnomaly * rad) + 282.634;
+  trueLong = normDegrees(trueLong);
+  let rightAsc = (Math.atan(0.91764 * Math.tan(trueLong * rad)) * 180) / Math.PI;
+  rightAsc = normDegrees(rightAsc);
+  rightAsc += Math.floor(trueLong / 90) * 90 - Math.floor(rightAsc / 90) * 90;
+  rightAsc /= 15;
+  const sinDec = 0.39782 * Math.sin(trueLong * rad);
+  const cosDec = Math.cos(Math.asin(sinDec));
+  const cosHour =
+    (Math.cos(ZENITH * rad) - sinDec * Math.sin(LAT * rad)) / (cosDec * Math.cos(LAT * rad));
+  if (cosHour > 1 || cosHour < -1) return null;
+  const hourAngle = (rising ? 360 - (Math.acos(cosHour) * 180) / Math.PI : (Math.acos(cosHour) * 180) / Math.PI) / 15;
+  return normHours(hourAngle + rightAsc - 0.06571 * t - 6.622 - lngHour);
+}
+
+function formatVienna(year: number, month: number, day: number, utcHours: number): string {
+  const instant = new Date(Date.UTC(year, month - 1, day) + utcHours * 3_600_000);
+  const parts = new Intl.DateTimeFormat('en-GB', {
+    timeZone: 'Europe/Vienna',
+    hour: '2-digit',
+    minute: '2-digit',
+    hourCycle: 'h23',
+  }).formatToParts(instant);
+  const hour = parts.find((part) => part.type === 'hour')?.value ?? '00';
+  const minute = parts.find((part) => part.type === 'minute')?.value ?? '00';
+  return `${hour === '24' ? '00' : hour}:${minute}`;
+}
+
+function formatDuration(hours: number): string {
+  const total = Math.round(hours * 60);
+  const h = Math.floor(total / 60);
+  const m = total % 60;
+  return `${h}h ${m}m`;
+}
+
 export const calculateSunTimes = (date: Date): SunTimes => {
-  // Koordinaten für Mitteleuropa (ungefähr Wien/München)
-  const latitude = 48.2; // Breitengrad
-  const longitude = 16.37; // Längengrad (Wien)
-  
-  // Tag des Jahres berechnen
-  const startOfYear = new Date(date.getFullYear(), 0, 1);
-  const dayOfYear = Math.floor((date.getTime() - startOfYear.getTime()) / (1000 * 60 * 60 * 24)) + 1;
-  
-  // Sonnendeklination berechnen
-  const P = Math.asin(0.39795 * Math.cos(0.98563 * (dayOfYear - 173) * Math.PI / 180));
-  
-  // Zeitgleichung
-  const argument = 0.98563 * (dayOfYear - 81) * Math.PI / 180;
-  const timeEquation = 4 * (longitude * Math.PI / 180 - Math.atan2(Math.tan(argument), Math.cos(23.44 * Math.PI / 180)));
-  
-  // Stundenwinkel für Sonnenaufgang/-untergang
-  const latRad = latitude * Math.PI / 180;
-  const hourAngle = Math.acos(-Math.tan(latRad) * Math.tan(P));
-  
-  // Sonnenaufgang und -untergang in Dezimalstunden (UTC)
-  const sunriseUTC = 12 - hourAngle * 12 / Math.PI - timeEquation / 60;
-  const sunsetUTC = 12 + hourAngle * 12 / Math.PI - timeEquation / 60;
-  
-  // Umrechnung in lokale Zeit (MEZ/MESZ)
-  // Vereinfacht: +1 Stunde für MEZ, +2 für MESZ
-  const isDST = isDaylightSavingTime(date);
-  const timeOffset = isDST ? 2 : 1;
-  
-  const sunriseLocal = sunriseUTC + timeOffset;
-  const sunsetLocal = sunsetUTC + timeOffset;
-  
-  // Tageslänge berechnen
-  const dayLengthHours = sunsetLocal - sunriseLocal;
-  
-  const formatTime = (hours: number): string => {
-    const h = Math.floor(hours);
-    const m = Math.floor((hours - h) * 60);
-    return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`;
-  };
-  
-  const formatDuration = (hours: number): string => {
-    const h = Math.floor(hours);
-    const m = Math.floor((hours - h) * 60);
-    return `${h}h ${m}m`;
-  };
-  
-  return {
-    sunrise: formatTime(sunriseLocal),
-    sunset: formatTime(sunsetLocal),
-    dayLength: formatDuration(dayLengthHours),
-    accuracy: "±10-15 Min"
-  };
-};
-
-/**
- * Prüft ob Sommerzeit aktiv ist (vereinfacht für Mitteleuropa)
- * Sommerzeit: Letzter Sonntag im März bis letzter Sonntag im Oktober
- */
-const isDaylightSavingTime = (date: Date): boolean => {
   const year = date.getFullYear();
-  const month = date.getMonth();
+  const month = date.getMonth() + 1;
   const day = date.getDate();
-  
-  // Vor März oder nach Oktober: Winterzeit
-  if (month < 2 || month > 9) return false;
-  
-  // April bis September: Sommerzeit
-  if (month > 2 && month < 9) return true;
-  
-  // März: Prüfe ob nach letztem Sonntag
-  if (month === 2) {
-    const lastSundayMarch = getLastSundayOfMonth(year, 2);
-    return day >= lastSundayMarch;
+  const rise = eventUtcHours(year, month, day, true);
+  const set = eventUtcHours(year, month, day, false);
+  if (rise == null || set == null) {
+    return { sunrise: '—', sunset: '—', dayLength: '—', accuracy: '±2 Min' };
   }
-  
-  // Oktober: Prüfe ob vor letztem Sonntag
-  if (month === 9) {
-    const lastSundayOctober = getLastSundayOfMonth(year, 9);
-    return day < lastSundayOctober;
-  }
-  
-  return false;
-};
-
-const getLastSundayOfMonth = (year: number, month: number): number => {
-  const lastDay = new Date(year, month + 1, 0);
-  const lastSunday = lastDay.getDate() - lastDay.getDay();
-  return lastSunday;
+  let length = set - rise;
+  if (length < 0) length += 24;
+  return {
+    sunrise: formatVienna(year, month, day, rise),
+    sunset: formatVienna(year, month, day, set),
+    dayLength: formatDuration(length),
+    accuracy: '±2 Min',
+  };
 };

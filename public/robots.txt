@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://welche-kalenderwoche-ist-heute.at/sitemap.xml

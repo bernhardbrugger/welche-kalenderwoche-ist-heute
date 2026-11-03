@@ -367,6 +367,6 @@ export const dailyFactsJanuary: Record<string, string> = {
 };
 
 export const getHistoricalFact = (date: Date): string => {
-  const key = date.toISOString().slice(5, 10); // "MM-DD"
-  return dailyFactsJanuary[key] || "Für dieses Datum liegt derzeit kein Fakt vor.";
+  const key = `${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+  return dailyFactsJanuary[key] || 'Für dieses Datum liegt derzeit kein Fakt vor.';
 };

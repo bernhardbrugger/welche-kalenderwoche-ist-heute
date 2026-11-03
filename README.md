@@ -7,9 +7,11 @@
 ## ✨ Features
 
 - 🕐 Shows the current **ISO 8601 calendar week** with its Monday–Sunday date range
-- 🇦🇹 The server-rendered title and preview are calculated for **Vienna time**, not the server's UTC clock, so Sunday night and Monday morning are right
-- 📱 Responsive design — works on mobile and desktop
-- 🇩🇪 Designed for the German-speaking market (KW = Kalenderwoche)
+- 🇦🇹 The server-rendered title, description and first paragraph are calculated for **Vienna time**, not the server's UTC clock, so Sunday night and Monday morning are right. HTML is cached for two minutes, and `/sitemap.xml` marks the homepage as updated on Vienna's calendar day, so search snippets are not stuck on last week's crawl.
+- 🔗 Every week has a stable URL (`/kw/2026/45`) whose title does not go stale
+- 🗓 Bundesland holidays for Austria and Germany, common Swiss holidays, Fenstertage / Brückentage, working days
+- ⌨️ Jump by date, KW or `2026-W45`. Arrow keys move between weeks
+- 📱 Installable, light and dark, no account
 
 ## 🛠 Tech Stack
 

@@ -271,13 +271,6 @@ const defaultMottos = [
 ];
 
 export const getWeeklyMotto = (weekNumber: number): string => {
-  const weekMottos = weeklyMottos[weekNumber];
-
-  if (weekMottos && weekMottos.length > 0) {
-    const randomIndex = Math.floor(Math.random() * weekMottos.length);
-    return weekMottos[randomIndex];
-  }
-
-  const randomIndex = Math.floor(Math.random() * defaultMottos.length);
-  return defaultMottos[randomIndex];
+  const list = weeklyMottos[weekNumber]?.length ? weeklyMottos[weekNumber] : defaultMottos;
+  return list[(Math.max(weekNumber, 1) - 1) % list.length];
 };
