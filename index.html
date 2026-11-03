@@ -3,98 +3,66 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="robots" content="index, follow" />
-
-    <!-- === Dynamisch befüllen ===
-         Ersetze {{KW}}, {{START_DATE}} (TT.MM.JJJJ) und {{END_DATE}} -->
-    <title>
-      Aktuelle Kalenderwoche heute: KW {{KW}} ({{START_DATE}} – {{END_DATE}})
-    </title>
-    <meta
-      name="description"
-      content="Heute ist KW {{KW}} ({{START_DATE}} – {{END_DATE}}). Feiertage DE/AT, Sternzeichen & Wochenmotto auf einen Blick."
-    />
-
-    <!-- Canonical + hreflang -->
-    <link rel="canonical" href="https://welche-kalenderwoche-ist-heute.at/" />
-    <link rel="alternate" hreflang="de"    href="https://welche-kalenderwoche-ist-heute.at/" />
-    <link rel="alternate" hreflang="de-AT" href="https://welche-kalenderwoche-ist-heute.at/?country=AT" />
-
-    <!-- Favicon -->
+    <meta name="robots" content="{{ROBOTS}}" />
+    <meta name="theme-color" content="#f3ecdf" />
+    <title>{{TITLE}}</title>
+    <meta name="description" content="{{DESCRIPTION}}" />
+    <link rel="canonical" href="{{CANONICAL}}" />
+    <link rel="alternate" hreflang="de" href="{{CANONICAL}}" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="shortcut icon" href="/favicon.ico" />
+    <link rel="manifest" href="/manifest.webmanifest" />
     <link rel="apple-touch-icon" href="/favicon.svg" />
-
-    <!-- Open Graph -->
-    <meta property="og:locale"      content="de_DE" />
-    <meta property="og:type"        content="website" />
-    <meta
-      property="og:title"
-      content="Aktuelle Kalenderwoche heute: KW {{KW}} ({{START_DATE}} – {{END_DATE}})"
-    />
-    <meta
-      property="og:description"
-      content="Heute ist KW {{KW}} ({{START_DATE}} – {{END_DATE}}). Feiertage DE/AT, Sternzeichen & Wochenmotto."
-    />
-    <meta property="og:url"         content="https://welche-kalenderwoche-ist-heute.at/" />
-    <meta property="og:image"       content="https://welche-kalenderwoche-ist-heute.at/og-image.jpg" />
-
-    <!-- Twitter Card -->
-    <meta name="twitter:card"        content="summary_large_image" />
-    <meta name="twitter:title"       content="KW {{KW}} heute" />
-    <meta
-      name="twitter:description"
-      content="Heute ist KW {{KW}} ({{START_DATE}} – {{END_DATE}}). Feiertage, Sternzeichen & Wochenmotto."
-    />
-    <meta name="twitter:image"       content="https://welche-kalenderwoche-ist-heute.at/og-image.jpg" />
-
-    <!-- JSON-LD Structured Data -->
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "WebPage",
-      "name": "Aktuelle Kalenderwoche heute: KW {{KW}}",
-      "url": "https://welche-kalenderwoche-ist-heute.at/",
-      "description": "Heute ist KW {{KW}} ({{START_DATE}} – {{END_DATE}}). Feiertage, Sternzeichen & Wochenmotto."
-    }
+    <meta property="og:locale" content="de_AT" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="{{TITLE}}" />
+    <meta property="og:description" content="{{DESCRIPTION}}" />
+    <meta property="og:url" content="{{CANONICAL}}" />
+    <meta property="og:image" content="https://welche-kalenderwoche-ist-heute.at/og-image.png" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="{{TITLE}}" />
+    <meta name="twitter:description" content="{{DESCRIPTION}}" />
+    <meta name="twitter:image" content="https://welche-kalenderwoche-ist-heute.at/og-image.png" />
+    <script type="application/ld+json">{{JSON_LD}}</script>
+    <script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var dark =
+            stored === 'dark' ||
+            (stored !== 'light' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+          if (dark) document.documentElement.classList.add('dark');
+        } catch (e) {}
+      })();
     </script>
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "WebSite",
-      "url": "https://welche-kalenderwoche-ist-heute.at/",
-      "potentialAction": {
-        "@type": "SearchAction",
-        "target": "https://welche-kalenderwoche-ist-heute.at/?q={query}",
-        "query-input": "required name=query"
-      },
-      "publisher": {
-        "@type": "Organization",
-        "name": "welche-kalenderwoche-ist-heute.at",
-        "logo": {
-          "@type": "ImageObject",
-          "url": "https://welche-kalenderwoche-ist-heute.at/favicon.svg",
-          "width": 500,
-          "height": 500
-        }
-      }
-    }
-    </script>
-
-    <!-- Entferne statisches reCAPTCHA-Skript, wird dynamisch in React geladen -->
-    <!-- <script src="https://www.google.com/recaptcha/api.js?render=DEIN_SITE_KEY" async defer></script> -->
-
-    <!-- Fonts / Styles -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,560;9..144,680&family=Outfit:wght@360;460;560&display=swap"
       rel="stylesheet"
     />
+    <style>
+      :root { color-scheme: light; background: #f3ecdf; color: #1c1712; }
+      html.dark { color-scheme: dark; background: #12100e; color: #f6f1e8; }
+      body { margin: 0; font-family: Outfit, system-ui, sans-serif; }
+      .boot { min-height: 100vh; display: grid; place-items: center; text-align: center; padding: 2.5rem 1.25rem; }
+      .boot-q { letter-spacing: 0.18em; text-transform: uppercase; font-size: 0.78rem; opacity: 0.62; margin: 0 0 0.75rem; }
+      .boot-k { font-family: Fraunces, Georgia, serif; font-size: clamp(6.5rem, 24vw, 11rem); line-height: 0.82; margin: 0; letter-spacing: -0.05em; font-weight: 560; }
+      .boot-k span { font-size: 0.28em; letter-spacing: 0.14em; display: block; margin-bottom: 0.4rem; font-family: Outfit, system-ui, sans-serif; font-weight: 560; opacity: 0.55; }
+      .boot-a { max-width: 38rem; margin: 1.25rem auto 0; font-size: 1.05rem; line-height: 1.5; }
+      .boot-d { opacity: 0.6; margin-top: 0.75rem; }
+    </style>
   </head>
-
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <main class="boot">
+        <div>
+          <p class="boot-q">{{QUESTION}}</p>
+          <p class="boot-k"><span>KW</span>{{KW}}</p>
+          <p class="boot-a">{{ANSWER}}</p>
+          <p class="boot-d">{{BOOT_LINE}}</p>
+        </div>
+      </main>
+    </div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

@@ -1,9 +1,17 @@
 /** @type {import('tailwindcss').Config} */
 export default {
   content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
+  darkMode: 'class',
   theme: {
     extend: {
       colors: {
+        paper: 'var(--paper)',
+        'paper-2': 'var(--paper-2)',
+        ink: 'var(--ink)',
+        muted: 'var(--muted)',
+        line: 'var(--line)',
+        accent: 'var(--accent)',
+        spruce: 'var(--spruce)',
         background: {
           light: '#f5f5f5',
         },
@@ -44,15 +52,8 @@ export default {
         }
       },
       fontFamily: {
-        sans: [
-          'Inter',
-          'SF Pro Display',
-          'SF Pro',
-          '-apple-system',
-          'BlinkMacSystemFont',
-          'system-ui',
-          'sans-serif',
-        ],
+        sans: ['Outfit', 'system-ui', 'sans-serif'],
+        display: ['Fraunces', 'Georgia', 'serif'],
       },
       fontSize: {
         huge: '64px',

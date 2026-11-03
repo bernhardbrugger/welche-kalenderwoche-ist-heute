@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
+import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
 
 type ThemeContextType = {
   isDark: boolean;
@@ -17,35 +17,28 @@ type ThemeProviderProps = {
 };
 
 export const ThemeProvider = ({ children }: ThemeProviderProps) => {
-  const [isDark, setIsDark] = useState(false);
+  const [isDark, setIsDark] = useState(() => document.documentElement.classList.contains('dark'));
 
   useEffect(() => {
-    // Check user preference from system
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    
-    // Check if theme is stored in localStorage
-    const storedTheme = localStorage.getItem('theme');
-    
-    if (storedTheme === 'dark') {
-      setIsDark(true);
-    } else if (storedTheme === 'light') {
-      setIsDark(false);
-    } else {
-      setIsDark(prefersDark);
-    }
+    document.documentElement.classList.toggle('dark', isDark);
+    document.querySelector('meta[name="theme-color"]')?.setAttribute('content', isDark ? '#12100e' : '#f3ecdf');
+  }, [isDark]);
+
+  useEffect(() => {
+    if (localStorage.getItem('theme')) return;
+    const media = window.matchMedia('(prefers-color-scheme: dark)');
+    const apply = () => setIsDark(media.matches);
+    media.addEventListener('change', apply);
+    return () => media.removeEventListener('change', apply);
   }, []);
 
   const toggleTheme = () => {
-    setIsDark(prev => {
-      const newValue = !prev;
-      localStorage.setItem('theme', newValue ? 'dark' : 'light');
-      return newValue;
+    setIsDark((prev) => {
+      const next = !prev;
+      localStorage.setItem('theme', next ? 'dark' : 'light');
+      return next;
     });
   };
 
-  return (
-    <ThemeContext.Provider value={{ isDark, toggleTheme }}>
-      {children}
-    </ThemeContext.Provider>
-  );
+  return <ThemeContext.Provider value={{ isDark, toggleTheme }}>{children}</ThemeContext.Provider>;
 };

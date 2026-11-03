@@ -6,3 +6,9 @@
 [[edge_functions]]
   path = "/*"
   function = "transform-meta"
+
+# Client routes such as /kw/2026/45. Real files (favicon, the IndexNow key) still win.
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
