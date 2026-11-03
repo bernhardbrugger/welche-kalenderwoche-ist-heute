@@ -2,7 +2,8 @@ import React, { useRef, useState } from 'react';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { CalendarPlus, Check, ChevronLeft, ChevronRight, Copy, Share2 } from 'lucide-react';
 import { useWeekData } from '../context/WeekDataContext';
-import { calendarDaysBetween, viennaClock, viennaNow, weekendPhrase } from '../utils/civil';
+import WeatherLine from './WeatherLine';
+import { calendarDaysBetween, viennaNow, weekendPhrase } from '../utils/civil';
 import { buildWeekIcs, downloadIcs } from '../utils/ics';
 
 const WeekHero: React.FC = () => {
@@ -81,7 +82,7 @@ const WeekHero: React.FC = () => {
     >
       <div className="flex items-start justify-between gap-3">
         <p className="kicker">{relativeLabel}</p>
-        <p className="tabular-nums text-sm text-muted">{viennaClock(now)} Uhr · Wien</p>
+        <WeatherLine />
       </div>
 
       <h1 className="mt-3 text-center font-display text-[1.55rem] leading-tight sm:mt-6 sm:text-4xl">

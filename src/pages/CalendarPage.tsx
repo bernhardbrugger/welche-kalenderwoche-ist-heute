@@ -6,6 +6,8 @@ import Planner from '../components/Planner';
 import WeekHero from '../components/WeekHero';
 import WeekStory from '../components/WeekStory';
 import WeekStrip from '../components/WeekStrip';
+import Wochennotiz from '../components/Wochennotiz';
+import Wochenraetsel from '../components/Wochenraetsel';
 import { useWeekData } from '../context/WeekDataContext';
 
 const CalendarPage: React.FC = () => {
@@ -55,6 +57,10 @@ const CalendarPage: React.FC = () => {
     <div className="mx-auto max-w-6xl space-y-4 px-4 pb-28 md:pb-8">
       <WeekHero />
       <WeekStrip />
+      <div className="grid gap-4 lg:grid-cols-2">
+        <Wochenraetsel />
+        <Wochennotiz />
+      </div>
       <Insights />
       <WeekStory />
       <Planner />
