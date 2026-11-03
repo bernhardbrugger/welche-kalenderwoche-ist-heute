@@ -20,8 +20,16 @@ const PrivacyPage: React.FC = () => {
         <section>
           <h2 className="font-display text-2xl text-ink">Was im Browser bleibt</h2>
           <p className="mt-2">
-            Land, Bundesland, Stunden pro Tag und das helle oder dunkle Design werden im lokalen Speicher deines Browsers gemerkt.
-            Es gibt kein Konto und keine Analyse- oder Werbe-Cookies. Die Kalenderwoche wird auf deinem Gerät berechnet.
+            Land, Bundesland, Stunden pro Tag, das Design, die Randnotizen zu einer Kalenderwoche und welche Tagesrätsel du gelöst hast
+            bleiben im lokalen Speicher deines Browsers. Es gibt kein Konto und keine Analyse- oder Werbe-Cookies.
+            Die Kalenderwoche wird auf deinem Gerät berechnet. Der Standort deines Geräts wird nicht abgefragt.
+          </p>
+        </section>
+        <section>
+          <h2 className="font-display text-2xl text-ink">Wetter</h2>
+          <p className="mt-2">
+            Für die gewählte Region fragt der Browser die Wettervorhersage bei Open-Meteo ab. Mitgeschickt werden die Koordinaten
+            der zugehörigen Stadt, zum Beispiel Wien oder Graz, nicht dein Aufenthaltsort. Open-Meteo verarbeitet diese Anfrage als eigener Dienst.
           </p>
         </section>
         <section>

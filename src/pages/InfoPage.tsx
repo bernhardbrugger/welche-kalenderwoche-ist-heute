@@ -35,8 +35,9 @@ const InfoPage: React.FC = () => {
           <h2 className="font-display text-2xl">Was die App sonst noch weiß</h2>
           <p className="mt-4 leading-relaxed text-muted">
             Gesetzliche Feiertage für die Bundesländer in Österreich und Deutschland, die üblichen Feiertage der Schweiz,
-            Fenstertage, Werktage, den Stand im Jahr und einen Satz zum Kopieren. Die Sonnenzeiten sind eine Näherung für Wien.
-            Alles rechnet im Browser. Land und Bundesland bleiben lokal gespeichert.
+            Fenstertage, Werktage, den Stand im Jahr und einen Satz zum Kopieren. Die Sonnenzeiten gelten für Wien, etwa auf zwei Minuten.
+            Ein Tagesrätsel zur Kalenderwoche wechselt um Mitternacht in Wien, die Serie bleibt auf dem Gerät.
+            Das Wetter kommt für die Stadt der gewählten Region von Open-Meteo. Randnotizen gehören zu einer KW und verlassen den Browser nicht.
           </p>
         </section>
       </div>

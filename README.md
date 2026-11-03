@@ -11,7 +11,9 @@
 - 🔗 Every week has a stable URL (`/kw/2026/45`) whose title does not go stale
 - 🗓 Bundesland holidays for Austria and Germany, common Swiss holidays, Fenstertage / Brückentage, working days
 - ⌨️ Jump by date, KW or `2026-W45`. Arrow keys move between weeks
-- 📱 Installable, light and dark, no account
+- 🌤 Sky, sun and particles follow the season, the time of day in Vienna, and the weather of the selected region (Open-Meteo)
+- 🎟 One daily ISO-week puzzle, a streak, and a note stored on the device for each week
+- 📱 Installable. The plates follow the night automatically, or stay light or dark if you pin them
 
 ## 🛠 Tech Stack
 

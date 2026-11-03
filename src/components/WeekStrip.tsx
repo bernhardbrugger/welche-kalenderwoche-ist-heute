@@ -31,7 +31,7 @@ const WeekStrip: React.FC = () => {
                 focused
                   ? 'border-ink bg-ink text-paper'
                   : weekend
-                    ? 'border-line bg-[var(--weekend)]'
+                    ? 'day-weekend border-line'
                     : 'border-line bg-paper-2'
               }`}
               aria-pressed={focused}

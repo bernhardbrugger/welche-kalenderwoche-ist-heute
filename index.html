@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="robots" content="{{ROBOTS}}" />
-    <meta name="theme-color" content="#f3ecdf" />
+    <meta name="theme-color" content="#8ea0ae" />
     <title>{{TITLE}}</title>
     <meta name="description" content="{{DESCRIPTION}}" />
     <link rel="canonical" href="{{CANONICAL}}" />
@@ -27,27 +27,26 @@
       (function () {
         try {
           var stored = localStorage.getItem('theme');
-          var dark =
-            stored === 'dark' ||
-            (stored !== 'light' && window.matchMedia('(prefers-color-scheme: dark)').matches);
-          if (dark) document.documentElement.classList.add('dark');
+          var mode = stored === 'light' || stored === 'dark' || stored === 'auto' ? stored : 'auto';
+          document.documentElement.dataset.theme = mode;
+          if (stored === 'dark') document.documentElement.classList.add('dark');
         } catch (e) {}
       })();
     </script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,560;9..144,680&family=Outfit:wght@360;460;560&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Darker+Grotesque:wght@600;800&display=swap"
       rel="stylesheet"
     />
     <style>
-      :root { color-scheme: light; background: #f3ecdf; color: #1c1712; }
-      html.dark { color-scheme: dark; background: #12100e; color: #f6f1e8; }
-      body { margin: 0; font-family: Outfit, system-ui, sans-serif; }
+      :root { color-scheme: light; background: #8ea0ae; color: #1c1915; }
+      html.dark { color-scheme: dark; background: #120e14; color: #f4efe4; }
+      body { margin: 0; font-family: "Atkinson Hyperlegible", system-ui, sans-serif; }
       .boot { min-height: 100vh; display: grid; place-items: center; text-align: center; padding: 2.5rem 1.25rem; }
       .boot-q { letter-spacing: 0.18em; text-transform: uppercase; font-size: 0.78rem; opacity: 0.62; margin: 0 0 0.75rem; }
-      .boot-k { font-family: Fraunces, Georgia, serif; font-size: clamp(6.5rem, 24vw, 11rem); line-height: 0.82; margin: 0; letter-spacing: -0.05em; font-weight: 560; }
-      .boot-k span { font-size: 0.28em; letter-spacing: 0.14em; display: block; margin-bottom: 0.4rem; font-family: Outfit, system-ui, sans-serif; font-weight: 560; opacity: 0.55; }
+      .boot-k { font-family: "Darker Grotesque", "Arial Narrow", sans-serif; font-size: clamp(6.5rem, 24vw, 11rem); line-height: 0.78; margin: 0; letter-spacing: -0.04em; font-weight: 800; }
+      .boot-k span { font-size: 0.22em; letter-spacing: 0.18em; display: block; margin-bottom: 0.2rem; font-weight: 600; opacity: 0.6; }
       .boot-a { max-width: 38rem; margin: 1.25rem auto 0; font-size: 1.05rem; line-height: 1.5; }
       .boot-d { opacity: 0.6; margin-top: 0.75rem; }
     </style>
