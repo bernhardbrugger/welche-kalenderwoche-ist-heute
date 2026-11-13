@@ -39,6 +39,10 @@ npm run check:week
 
 Because sometimes you just need to know what week it is — without ads, cookie banners, or slow page loads.
 
+## 📄 License
+
+MIT — see [LICENSE](LICENSE).
+
 ---
 
 © Bernhard Brugger, 2025
