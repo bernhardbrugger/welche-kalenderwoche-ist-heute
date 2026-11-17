@@ -11,6 +11,8 @@
     "check:week": "node scripts/check-week.mjs"
   },
   "dependencies": {
+    "@fontsource/atkinson-hyperlegible": "^5.3.0",
+    "@fontsource/darker-grotesque": "^5.3.0",
     "date-fns": "^3.3.1",
     "framer-motion": "^11.0.5",
     "lucide-react": "^0.344.0",
