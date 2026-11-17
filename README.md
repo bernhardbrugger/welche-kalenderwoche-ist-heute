@@ -1,5 +1,7 @@
 # 📅 Welche Kalenderwoche ist heute?
 
+[![CI](https://github.com/bernhardbrugger/welche-kalenderwoche-ist-heute/actions/workflows/ci.yml/badge.svg)](https://github.com/bernhardbrugger/welche-kalenderwoche-ist-heute/actions/workflows/ci.yml)
+
 > A minimal web app that answers one question: **What calendar week is it today?**
 
 **Live: [welche-kalenderwoche-ist-heute.at](https://welche-kalenderwoche-ist-heute.at/)**
