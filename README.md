@@ -37,6 +37,21 @@ Check the edge function's week calculation against known dates (year boundaries,
 npm run check:week
 ```
 
+## ⚠️ Limits
+
+- **"Today" is Vienna's day, everywhere.** The page and the edge function both take the date in `Europe/Vienna`, so a
+  visitor in New York sees the new week from Sunday 18:00 local time. The clock, sunrise and sunset are Vienna's too.
+- **Holidays are coded by hand**, not loaded from an official source: Austria and Germany by Bundesland, Switzerland
+  only with the holidays common to most cantons (no cantonal list). School holidays are not included.
+- **Tests cover the week calculation only.** `npm run check:week` checks the edge function's ISO week against known
+  dates and against date-fns for every day from 2019 to 2030; CI runs lint, that check and the build. Holidays,
+  Fenstertage, the puzzle and the UI have no automated tests.
+- **The weather line needs the network** (Open-Meteo); without it the line leaves the forecast out.
+- **Notes, the puzzle streak and settings live in the browser's `localStorage`**: not synced between devices, and gone
+  when the site data is cleared.
+- **`npm run dev` does not run the edge function.** The week in the page title, description and preview tags is
+  filled only on Netlify (or with the Netlify CLI).
+
 ## 💡 Why?
 
 Because sometimes you just need to know what week it is — without ads, cookie banners, or slow page loads.
